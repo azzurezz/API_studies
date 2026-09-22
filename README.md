@@ -36,6 +36,7 @@ No terminal, dentro do diretório do projeto, execute:
 ```bash
 python3 main.py
 ```
+
 *A API estará rodando em `http://127.0.0.1:8000`.*
 *Você pode acessar a documentação interativa Swagger no navegador em:* `http://127.0.0.1:8000/docs`
 
@@ -60,6 +61,7 @@ curl -X POST "http://127.0.0.1:8000/processar" \
 ```
 
 **Exemplo de Resposta (HTTP 200):**
+
 ```json
 {
   "sucesso": true,

@@ -45,8 +45,28 @@ def enviar_requisicao(numero, palavra):
     print("=" * 60 + "\n")
 
 
-if __name__ == "__main__":
-    print("🚀 Testando cliente para consumir a API POST...\n")
+def modo_interativo():
+    print("✨ Modo Interativo - Digite seus próprios valores ✨\n")
+    try:
+        entrada_num = input("🔢 Digite um número inteiro: ").strip()
+        try:
+            numero = int(entrada_num)
+        except ValueError:
+            # Caso o usuário digite um float ou texto, repassamos como float ou string para a API validar
+            try:
+                numero = float(entrada_num)
+            except ValueError:
+                numero = entrada_num
+
+        palavra = input("🔤 Digite uma palavra (apenas letras): ").strip()
+        print()
+        enviar_requisicao(numero, palavra)
+    except KeyboardInterrupt:
+        print("\n\nOperação cancelada pelo usuário.")
+
+
+def rodar_testes_predefinidos():
+    print("🚀 Executando testes automatizados pré-definidos...\n")
 
     # 1. Caso de Sucesso 1
     print("🔹 TESTE 1: Dados válidos (Número: 2, Palavra: 'Python')")
@@ -63,3 +83,19 @@ if __name__ == "__main__":
     # 4. Caso de Erro: Número não é inteiro (float ou string inválida)
     print("🔹 TESTE 4: Validação incorreta (Número não é inteiro '3.14')")
     enviar_requisicao(numero=3.14, palavra="Teste")
+
+
+if __name__ == "__main__":
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "--auto":
+        rodar_testes_predefinidos()
+    else:
+        while True:
+            modo_interativo()
+            opcao = input("Deseja fazer outro teste? (s/n): ").strip().lower()
+            if opcao != 's':
+                print("Até logo! 👋")
+                break
+            print("\n" + "-" * 60 + "\n")
+
