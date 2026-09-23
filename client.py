@@ -10,7 +10,7 @@ def enviar_requisicao(numero, palavra):
     Envia uma requisição POST para a API e exibe a resposta e o tempo decorrido.
     """
     print("=" * 60)
-    print(f"📤 Enviando dados para API:")
+    print(f"Enviando dados para API:")
     print(f"   - Número: {numero} (tipo: {type(numero).__name__})")
     print(f"   - Palavra: '{palavra}'")
     
@@ -24,31 +24,31 @@ def enviar_requisicao(numero, palavra):
         resposta = requests.post(API_URL, json=payload, timeout=10)
         tempo_decorrido = time.time() - inicio
 
-        print(f"⏱️ Tempo total de resposta: {tempo_decorrido:.2f} segundos")
-        print(f"📥 Código HTTP: {resposta.status_code}")
+        print(f"Tempo total de resposta: {tempo_decorrido:.2f} segundos")
+        print(f"Código HTTP: {resposta.status_code}")
 
         if resposta.status_code == 200:
             dados = resposta.json()
-            print("✅ Sucesso no processamento!")
-            print(f"   - 🔢 Número elevado à 10ª potência: {dados['numero_potencia_10']}")
-            print(f"   - 🔤 Quantidade de letras na palavra: {dados['quantidade_letras']}")
-            print(f"   - 💬 Mensagem: {dados['mensagem']}")
+            print("Sucesso no processamento!")
+            print(f"Número elevado à 10ª potência: {dados['numero_potencia_10']}")
+            print(f"Quantidade de letras na palavra: {dados['quantidade_letras']}")
+            print(f"Mensagem: {dados['mensagem']}")
         else:
-            print("❌ Erro de Validação/Requisição:")
-            print(f"   - Detalhes: {resposta.json()}")
+            print("Erro de Validação/Requisição:")
+            print(f"Detalhes: {resposta.json()}")
 
     except requests.exceptions.ConnectionError:
-        print("🚨 Erro: Não foi possível conectar à API. Certifique-se de que a API esteja rodando em http://127.0.0.1:8000")
+        print("Erro: Não foi possível conectar à API. Certifique-se de que a API esteja rodando em http://127.0.0.1:8000")
     except Exception as e:
-        print(f"🚨 Erro inesperado: {e}")
+        print(f"Erro inesperado: {e}")
 
     print("=" * 60 + "\n")
 
 
 def modo_interativo():
-    print("✨ Modo Interativo - Digite seus próprios valores ✨\n")
+
     try:
-        entrada_num = input("🔢 Digite um número inteiro: ").strip()
+        entrada_num = input("Digite um número inteiro: ").strip()
         try:
             numero = int(entrada_num)
         except ValueError:
@@ -58,30 +58,30 @@ def modo_interativo():
             except ValueError:
                 numero = entrada_num
 
-        palavra = input("🔤 Digite uma palavra (apenas letras): ").strip()
+        palavra = input("Digite uma palavra (apenas letras): ").strip()
         print()
         enviar_requisicao(numero, palavra)
     except KeyboardInterrupt:
-        print("\n\nOperação cancelada pelo usuário.")
+        print("Operação cancelada pelo usuário.")
 
 
 def rodar_testes_predefinidos():
-    print("🚀 Executando testes automatizados pré-definidos...\n")
+    print("Executando testes pré-definidos...")
 
     # 1. Caso de Sucesso 1
-    print("🔹 TESTE 1: Dados válidos (Número: 2, Palavra: 'Python')")
+    print("TESTE 1: Dados válidos (Número: 2, Palavra: 'Python')")
     enviar_requisicao(numero=2, palavra="Python")
 
     # 2. Caso de Sucesso 2
-    print("🔹 TESTE 2: Dados válidos (Número: 3, Palavra: 'Desenvolvimento')")
+    print("TESTE 2: Dados válidos (Número: 3, Palavra: 'Desenvolvimento')")
     enviar_requisicao(numero=3, palavra="Desenvolvimento")
 
     # 3. Caso de Erro: Palavra com números/espaços
-    print("🔹 TESTE 3: Validação incorreta (Palavra contém número 'Python3')")
+    print("TESTE 3: Validação incorreta (Palavra contém número 'Python3')")
     enviar_requisicao(numero=5, palavra="Python3")
 
     # 4. Caso de Erro: Número não é inteiro (float ou string inválida)
-    print("🔹 TESTE 4: Validação incorreta (Número não é inteiro '3.14')")
+    print("TESTE 4: Validação incorreta (Número não é inteiro '3.14')")
     enviar_requisicao(numero=3.14, palavra="Teste")
 
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
             modo_interativo()
             opcao = input("Deseja fazer outro teste? (s/n): ").strip().lower()
             if opcao != 's':
-                print("Até logo! 👋")
+                print("Obrigado!")
                 break
             print("\n" + "-" * 60 + "\n")
 
