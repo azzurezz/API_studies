@@ -7,14 +7,14 @@
   <title>Letras × Número</title>
   <style>
     :root {
-      --bg: #0f1226;
-      --card: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #eef0ff;
-      --muted: #9aa0c7;
-      --accent: #7c6cff;
-      --accent2: #38d3c1;
-      --error: #ff6b81;
+      --bg: #f6f3ec;
+      --card: #fffdf9;
+      --border: #e3ddd0;
+      --text: #2a2a35;
+      --muted: #7a7886;
+      --accent: #6a5cf0;
+      --accent2: #1fb5a3;
+      --error: #d6455d;
     }
     * { box-sizing: border-box; }
     body {
@@ -25,10 +25,7 @@
       justify-content: center;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at 15% 20%, rgba(124, 108, 255, 0.35), transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(56, 211, 193, 0.28), transparent 40%),
-        var(--bg);
+      background: var(--bg);
       padding: 24px;
     }
     main {
@@ -38,8 +35,7 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 32px;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 12px 40px rgba(60, 50, 30, 0.10);
     }
     h1 { margin: 0 0 4px; font-size: 1.6rem; }
     p.sub { margin: 0 0 24px; color: var(--muted); font-size: 0.92rem; }
@@ -49,34 +45,44 @@
       padding: 12px 14px;
       font-size: 1rem;
       color: var(--text);
-      background: rgba(0, 0, 0, 0.25);
+      background: #fff;
       border: 1px solid var(--border);
       border-radius: 10px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124, 108, 255, 0.25); }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(106, 92, 240, 0.18); }
+    .botoes { display: flex; gap: 10px; margin-top: 22px; }
     button {
-      width: 100%;
-      margin-top: 22px;
       padding: 13px;
       font-size: 1rem;
       font-weight: 600;
-      color: #fff;
-      background: linear-gradient(135deg, var(--accent), #5a8dff);
-      border: 0;
       border-radius: 10px;
       cursor: pointer;
-      transition: transform 0.15s, filter 0.2s;
+      transition: transform 0.15s, filter 0.2s, background 0.2s;
     }
-    button:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    button:hover { transform: translateY(-1px); }
     button:disabled { opacity: 0.6; cursor: wait; transform: none; }
+    #enviar {
+      flex: 1;
+      color: #fff;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), #5a8dff);
+    }
+    #enviar:hover { filter: brightness(1.08); }
+    #limpar {
+      padding: 13px 20px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+    }
+    #limpar:hover { background: #f0ebdf; color: var(--text); }
     #resultado {
       margin-top: 24px;
       padding: 18px;
       border-radius: 12px;
       border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.25);
+      background: #fff;
       text-align: center;
       display: none;
       animation: surgir 0.3s ease;
@@ -108,7 +114,10 @@
       <label for="numero">Número</label>
       <input id="numero" type="number" step="any" placeholder="Ex.: 2" required>
 
-      <button id="enviar" type="submit">Calcular</button>
+      <div class="botoes">
+        <button id="enviar" type="submit">Calcular</button>
+        <button id="limpar" type="button">Limpar</button>
+      </div>
     </form>
 
     <div id="resultado" role="status" aria-live="polite"></div>
@@ -123,6 +132,7 @@
   <script>
     const form = document.getElementById("formulario");
     const botao = document.getElementById("enviar");
+    const botaoLimpar = document.getElementById("limpar");
     const saida = document.getElementById("resultado");
 
     function mostrar(html, erro = false) {
@@ -136,6 +146,13 @@
       d.textContent = texto;
       return d.innerHTML;
     }
+
+    botaoLimpar.addEventListener("click", () => {
+      form.reset();
+      saida.style.display = "none";
+      saida.innerHTML = "";
+      document.getElementById("nome").focus();
+    });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
