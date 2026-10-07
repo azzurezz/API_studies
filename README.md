@@ -12,9 +12,9 @@ Estudos de APIs em Python (FastAPI). O repositório tem duas APIs independentes,
 ```
 API_studies/
 ├── api_potencia/          # API 1 (main.py, client.py, testes, curl)
-├── api_letras_docker/     # API 2 (app.py, Dockerfile)
+├── api_letras_docker/     # API 2 (app.py, Dockerfile, README.md, DEPLOY.md)
 ├── LICENSE
 └── README.md
 ```
 
-Cada API tem o passo a passo de execução no README da sua pasta.
+Cada API tem o passo a passo de uso no README da sua pasta. Para publicar a `api_letras_docker` no servidor Ebino, veja o [DEPLOY.md](api_letras_docker/DEPLOY.md).

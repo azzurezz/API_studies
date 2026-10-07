@@ -1,69 +1,92 @@
-# API em Container: letras do nome × número (porta 12345)
+# API em Container: letras do nome × número
 
 API em FastAPI, empacotada com Docker. Recebe um `POST` com `nome` e `numero` e retorna a **quantidade de letras do nome × o número**.
 
-**Exemplo:** `{"nome": "Ana", "numero": 2}` → `{"nome":"Ana","letras":3,"numero":2.0,"resultado":6.0}`
+> Quer publicar/atualizar a API no servidor? Veja [DEPLOY.md](DEPLOY.md).
 
-## 🛠️ Arquivos
+## 📥 Requisição
 
-- `app.py`: API (`POST /`). Espaços e números no nome não contam como letras.
-- `Dockerfile`: imagem `python:3.12-slim`, uvicorn em `0.0.0.0:12345`.
+`POST /` com JSON:
 
-## A. Rodar localmente
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `nome` | texto | Nome a contar. Espaços e números não contam como letras. |
+| `numero` | número | Multiplicador (aceita decimais). |
+
+**Exemplo:**
+```bash
+curl -X POST http://localhost:12345/ \
+     -H 'Content-Type: application/json' \
+     -d '{"nome":"Ana","numero":2}'
+```
+
+**Resposta (HTTP 200):**
+```json
+{"nome":"Ana","letras":3,"numero":2.0,"resultado":6.0}
+```
+
+Se o JSON for inválido (ex.: `numero` em texto), a API responde HTTP `422` com o detalhe do erro.
+
+## 🧪 Como testar
+
+Escolha **uma** das formas abaixo.
+
+### Opção 1: Usar a API que está no servidor (Ebino)
+
+**Pré-requisito:** estar conectado na VPN do MPES.
+
+**1a. Acesso direto** (funciona quando a porta 12345 está liberada no firewall):
+```bash
+curl -X POST http://ebino.mpes.gov.br:12345/ \
+     -H 'Content-Type: application/json' \
+     -d '{"nome":"Ana","numero":2}'
+```
+Se der `Connection refused` ou timeout, use a 1b.
+
+**1b. Túnel SSH** (precisa de usuário no Ebino):
+
+1. Abra o túnel e **deixe esse terminal aberto**:
+   ```bash
+   ssh -L 12345:localhost:12345 SEU_USUARIO@ebino.mpes.gov.br
+   ```
+   > Se aparecer `Address already in use`, a porta 12345 da sua máquina já está ocupada. Troque o primeiro número, por exemplo `-L 8080:localhost:12345`, e use `localhost:8080` nos passos seguintes.
+2. Em **outro terminal**, chame a API:
+   ```bash
+   curl -X POST http://localhost:12345/ \
+        -H 'Content-Type: application/json' \
+        -d '{"nome":"Ana","numero":2}'
+   ```
+3. Ao terminar, digite `exit` no terminal do túnel.
+
+### Opção 2: Rodar na sua máquina (sem VPN)
+
+**Pré-requisito:** Docker instalado.
 
 ```bash
 cd api_letras_docker
 docker build -t exercicio-letras .
 docker run -d -p 12345:12345 exercicio-letras
-curl -X POST localhost:12345/ -H 'Content-Type: application/json' -d '{"nome":"Ana","numero":2}'
+curl -X POST http://localhost:12345/ -H 'Content-Type: application/json' -d '{"nome":"Ana","numero":2}'
 ```
 
-Para parar: `docker ps` (veja o ID) e `docker stop <ID>`.
+Para parar:
+```bash
+docker ps                # copie o ID do container
+docker stop <ID>
+```
 
-## B. Subir no Ebino (passo a passo)
+### Documentação interativa
 
-1. **Conectar na VPN do MPES** (na sua máquina):
-   ```bash
-   vpn-mpes connect
-   ```
-2. **Copiar a pasta para a VM** (na raiz do repositório, **fora do SSH**):
-   ```bash
-   scp -r api_letras_docker acarmo@ebino.mpes.gov.br:~/
-   ```
-3. **Entrar na VM**:
-   ```bash
-   ssh acarmo@ebino.mpes.gov.br
-   ```
-4. **Buildar a imagem** (na VM; precisa de `sudo`, pois o usuário não está no grupo `docker`):
-   ```bash
-   cd ~/api_letras_docker
-   sudo docker build -t exercicio-letras .
-   ```
-5. **Subir o container**:
-   ```bash
-   sudo docker run -d --restart unless-stopped -p 12345:12345 exercicio-letras
-   ```
-   > Se aparecer `port is already allocated`, já existe um container na porta 12345. Veja com `sudo docker ps` e pare com `sudo docker stop <ID>` para recriar.
-6. **Testar dentro da VM**:
-   ```bash
-   curl -X POST localhost:12345/ -H 'Content-Type: application/json' -d '{"nome":"Ana","numero":2}'
-   ```
-7. **Testar da sua máquina** (VPN ligada):
-   ```bash
-   curl -X POST http://ebino.mpes.gov.br:12345/ -H 'Content-Type: application/json' -d '{"nome":"Ana","numero":2}'
-   ```
-   Se der timeout, a porta está bloqueada no firewall. Use um túnel SSH:
-   ```bash
-   ssh -L 12345:localhost:12345 acarmo@ebino.mpes.gov.br
-   ```
-   Com o túnel aberto, em outro terminal: `curl -X POST localhost:12345/ -H 'Content-Type: application/json' -d '{"nome":"Ana","numero":2}'`
+Com a API acessível, abra `http://localhost:12345/docs` no navegador (Swagger) e teste pela interface.
 
-## Problemas comuns
+## ❓ Problemas comuns
 
 | Erro | Causa / solução |
 |------|-----------------|
 | `Could not resolve hostname` | Domínio digitado errado (é `.gov.br`) ou VPN desconectada. |
-| `permission denied ... docker.sock` | Use `sudo` antes do `docker`. |
-| `cd: ... Arquivo ou diretório inexistente` | A pasta não foi copiada. Refaça o `scp` (passo 2). |
-| `port is already allocated` | Já há um container na porta 12345 (`sudo docker ps`). |
+| `Connection refused` no acesso direto | Porta bloqueada no firewall. Use o túnel SSH (1b). |
+| `Address already in use` no túnel | Porta local ocupada. Use outra, como `-L 8080:localhost:12345`. |
+| `port is already allocated` ao rodar local | Já há um container na 12345. Veja com `docker ps` e pare com `docker stop <ID>`. |
+| `Permission denied` no SSH | Senha errada ou sem acesso ao Ebino. Fale com o administrador. |
+| Resposta de outra API / resultado estranho | Pode haver outro container na mesma porta. Confira com `docker ps`. |
 | `command not found` com `^[[200~` ou `~` | Caracteres de colagem no terminal. Digite o comando à mão. |
