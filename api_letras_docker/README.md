@@ -79,6 +79,18 @@ docker stop <ID>
 
 Com a API acessível, abra `http://localhost:12345/docs` no navegador (Swagger) e teste pela interface.
 
+## 🖥️ Interface web (opcional)
+
+Em vez de usar `curl`, você pode usar a página [interface.html](interface.html):
+
+1. Deixe a API acessível em `localhost:12345` (Opção 1b ou Opção 2 acima).
+2. Abra o arquivo `interface.html` no navegador (clique duas vezes ou arraste para a janela).
+3. Digite o nome e o número e clique em **Calcular**.
+
+Se a API estiver em outro endereço ou porta (ex.: túnel em `8080`), abra "Endereço da API" na página e troque a URL, por exemplo `http://localhost:8080/`.
+
+> A página só funciona com a versão da API que libera CORS. Se aparecer "Não consegui falar com a API" mesmo com ela rodando, a versão do servidor está desatualizada. Veja [DEPLOY.md](DEPLOY.md).
+
 ## ❓ Problemas comuns
 
 | Erro | Causa / solução |
@@ -90,3 +102,4 @@ Com a API acessível, abra `http://localhost:12345/docs` no navegador (Swagger) 
 | `Permission denied` no SSH | Senha errada ou sem acesso ao Ebino. Fale com o administrador. |
 | Resposta de outra API / resultado estranho | Pode haver outro container na mesma porta. Confira com `docker ps`. |
 | `command not found` com `^[[200~` ou `~` | Caracteres de colagem no terminal. Digite o comando à mão. |
+| Interface: "Não consegui falar com a API" | API fora do ar, URL errada ou versão sem CORS. Teste com `curl` primeiro. |

@@ -36,6 +36,8 @@ Guia para quem **publica ou atualiza** a API no servidor Ebino. Para apenas usar
 
 ## Atualizar uma versão já publicada
 
+> Necessário sempre que o `app.py` mudar. Em especial, a [interface.html](interface.html) só funciona se o servidor rodar a versão com CORS liberado.
+
 Se o código mudou, o container antigo continua na porta 12345 e impede o novo de subir (`port is already allocated`). Troque assim:
 
 ```bash

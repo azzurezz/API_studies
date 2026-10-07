@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interface para a API de letras do nome multiplicadas por um número.">
+  <title>Letras × Número</title>
+  <style>
+    :root {
+      --bg: #0f1226;
+      --card: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #eef0ff;
+      --muted: #9aa0c7;
+      --accent: #7c6cff;
+      --accent2: #38d3c1;
+      --error: #ff6b81;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(124, 108, 255, 0.35), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(56, 211, 193, 0.28), transparent 40%),
+        var(--bg);
+      padding: 24px;
+    }
+    main {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    h1 { margin: 0 0 4px; font-size: 1.6rem; }
+    p.sub { margin: 0 0 24px; color: var(--muted); font-size: 0.92rem; }
+    label { display: block; margin: 16px 0 6px; font-size: 0.85rem; color: var(--muted); }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124, 108, 255, 0.25); }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #5a8dff);
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s, filter 0.2s;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    button:disabled { opacity: 0.6; cursor: wait; transform: none; }
+    #resultado {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.25);
+      text-align: center;
+      display: none;
+      animation: surgir 0.3s ease;
+    }
+    #resultado.erro { border-color: var(--error); color: var(--error); }
+    #resultado .grande {
+      font-size: 2.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    #resultado .detalhe { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+    details { margin-top: 22px; color: var(--muted); font-size: 0.85rem; }
+    summary { cursor: pointer; }
+    @keyframes surgir { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Letras × Número</h1>
+    <p class="sub">Digite um nome e um número. A API conta as letras do nome e multiplica pelo número.</p>
+
+    <form id="formulario">
+      <label for="nome">Nome</label>
+      <input id="nome" type="text" placeholder="Ex.: Ana" required autofocus>
+
+      <label for="numero">Número</label>
+      <input id="numero" type="number" step="any" placeholder="Ex.: 2" required>
+
+      <button id="enviar" type="submit">Calcular</button>
+    </form>
+
+    <div id="resultado" role="status" aria-live="polite"></div>
+
+    <details>
+      <summary>Endereço da API</summary>
+      <label for="url">URL</label>
+      <input id="url" type="text" value="http://localhost:12345/">
+    </details>
+  </main>
+
+  <script>
+    const form = document.getElementById("formulario");
+    const botao = document.getElementById("enviar");
+    const saida = document.getElementById("resultado");
+
+    function mostrar(html, erro = false) {
+      saida.className = erro ? "erro" : "";
+      saida.innerHTML = html;
+      saida.style.display = "block";
+    }
+
+    function escapar(texto) {
+      const d = document.createElement("div");
+      d.textContent = texto;
+      return d.innerHTML;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      botao.disabled = true;
+      botao.textContent = "Calculando...";
+
+      try {
+        const resposta = await fetch(document.getElementById("url").value.trim(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: document.getElementById("nome").value,
+            numero: parseFloat(document.getElementById("numero").value),
+          }),
+        });
+
+        if (!resposta.ok) {
+          throw new Error("A API respondeu com erro " + resposta.status + ".");
+        }
+
+        const dados = await resposta.json();
+        mostrar(
+          '<div class="grande">' + dados.resultado + "</div>" +
+          '<div class="detalhe">' + dados.letras + " letras em “" + escapar(dados.nome) +
+          "” × " + dados.numero + "</div>"
+        );
+      } catch (err) {
+        const rede = err instanceof TypeError;
+        mostrar(
+          rede
+            ? "Não consegui falar com a API. Confira se ela está rodando (container ou túnel SSH) e se o endereço está certo."
+            : escapar(err.message),
+          true
+        );
+      } finally {
+        botao.disabled = false;
+        botao.textContent = "Calcular";
+      }
+    });
+  </script>
+</body>
+</html>
