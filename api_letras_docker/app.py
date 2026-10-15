@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 app = FastAPI(title="Exercício Letras x Número")
@@ -16,6 +17,11 @@ app.add_middleware(
 class Entrada(BaseModel):
     nome: str
     numero: float
+
+
+@app.get("/", response_class=FileResponse)
+def index():
+    return FileResponse("interface.html")
 
 
 @app.post("/")

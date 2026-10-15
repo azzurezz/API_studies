@@ -125,7 +125,7 @@
     <details>
       <summary>Endereço da API</summary>
       <label for="url">URL</label>
-      <input id="url" type="text" value="http://localhost:12345/">
+      <input id="url" type="text" value="/">
     </details>
   </main>
 
@@ -159,8 +159,13 @@
       botao.disabled = true;
       botao.textContent = "Calculando...";
 
+      let apiUrl = document.getElementById("url").value.trim();
+      if ((apiUrl === "/" || !apiUrl) && window.location.protocol === "file:") {
+        apiUrl = "http://localhost:12345/";
+      }
+
       try {
-        const resposta = await fetch(document.getElementById("url").value.trim(), {
+        const resposta = await fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
